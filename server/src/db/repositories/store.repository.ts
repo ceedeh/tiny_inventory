@@ -67,4 +67,9 @@ export class StoreRepository implements IStoreRepository {
   async delete(id: string): Promise<void> {
     await this.db.delete(storesTable).where(eq(storesTable.id, id));
   }
+
+  async getStoreCount(): Promise<number> {
+    const total = await this.db.$count(storesTable);
+    return total;
+  }
 }

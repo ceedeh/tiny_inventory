@@ -3,7 +3,7 @@ import { getPaginationOffset } from '@/shared/utils';
 import { ProductFilter, PaginatedResponse } from '@/shared/types';
 import { IProductRepository } from './interfaces';
 import { Product } from '../models';
-import { products as productsTable } from '../tables';
+import { products as productsTable, stores as storesTable } from '../tables';
 import { Database } from '../db';
 
 export class ProductRepository implements IProductRepository {
@@ -94,47 +94,20 @@ export class ProductRepository implements IProductRepository {
     await this.db.delete(productsTable).where(eq(productsTable.id, id));
   }
 
-  async getTotalInventoryValueByStore(storeId: string): Promise<number> {
-    const total = await this.db
-      .select({
-        totalValue: sql<number>`SUM(${productsTable.price} * ${productsTable.quantity})`,
-      })
-      .from(productsTable)
-      .where(eq(productsTable.storeId, storeId))
-      .limit(1)
-      .then((res) => res[0]?.totalValue || 0);
-
+  async getProductCount(): Promise<number> {
+    const total = await this.db.$count(productsTable);
     return total;
   }
 
-  async getLowStockProducts(threshold: number): Promise<PaginatedResponse<Product>> {
-    const products = await this.db.query.products.findMany({
-      where: lte(productsTable.quantity, threshold),
-      orderBy: desc(productsTable.quantity),
-      with: { store: true },
-    });
+  async getAverageProductCount(): Promise<number> {
+    const [totalProducts, totalStores] = await Promise.all([
+      this.db.$count(productsTable),
+      this.db.$count(storesTable),
+    ]);
 
-    return {
-      data: products.map((product) => new Product(product)),
-      pagination: {
-        page: 1,
-        limit: products.length,
-        total: products.length,
-        totalPages: 1,
-      },
-    };
-  }
+    if (totalStores === 0) return 0;
 
-  async countProductsByStore(): Promise<Array<{ storeId: string; products: number }>> {
-    const result = await this.db
-      .select({
-        storeId: productsTable.storeId,
-        products: sql<number>`COUNT(*)::int`,
-      })
-      .from(productsTable)
-      .groupBy(productsTable.storeId);
-
-    return result;
+    return Math.floor(totalProducts / totalStores);
   }
 
   async countProductsByCategoryForStore(

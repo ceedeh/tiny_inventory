@@ -30,7 +30,7 @@ export class Product extends BaseModel {
       sku: this.sku,
       name: this.name,
       category: this.category,
-      price: this.price,
+      price: parseFloat((this.price / 100).toFixed(2)),
       quantity: this.quantity,
       storeId: this.storeId,
       description: this.description,

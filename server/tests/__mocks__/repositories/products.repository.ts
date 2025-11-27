@@ -112,20 +112,6 @@ export class ProductsRepositoryMock implements IProductRepository {
     this.products.delete(id);
   }
 
-  async countProductsByStore(): Promise<Array<{ storeId: string; products: number }>> {
-    const storeProductCounts = new Map<string, number>();
-
-    for (const product of this.products.values()) {
-      const count = storeProductCounts.get(product.storeId) || 0;
-      storeProductCounts.set(product.storeId, count + 1);
-    }
-
-    return Array.from(storeProductCounts.entries()).map(([storeId, products]) => ({
-      storeId,
-      products,
-    }));
-  }
-
   async countProductsByCategoryForStore(
     storeId: string
   ): Promise<Array<{ category: string; products: number }>> {
@@ -142,6 +128,21 @@ export class ProductsRepositoryMock implements IProductRepository {
       category,
       products,
     }));
+  }
+
+  async getProductCount(): Promise<number> {
+    return this.products.size;
+  }
+
+  async getAverageProductCount(): Promise<number> {
+    if (!this.storeRepository) return 0;
+
+    const totalProducts = this.products.size;
+    const totalStores = await this.storeRepository.getStoreCount();
+
+    if (totalStores === 0) return 0;
+
+    return Math.floor(totalProducts / totalStores);
   }
 
   // Test helper methods

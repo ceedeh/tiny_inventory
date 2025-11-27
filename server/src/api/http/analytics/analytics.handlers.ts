@@ -3,13 +3,13 @@ import { AnalyticsService } from '@/core/services';
 
 export class AnalyticsHandlers {
   constructor(private readonly analyticsService: AnalyticsService) {
-    this.countProductsByStore = this.countProductsByStore.bind(this);
+    this.productsAnalytics = this.productsAnalytics.bind(this);
     this.countProductsByCategoryForStore = this.countProductsByCategoryForStore.bind(this);
   }
 
-  async countProductsByStore(_: Request, __: Response) {
+  async productsAnalytics(_: Request, __: Response) {
     try {
-      return await this.analyticsService.countProductsByStore();
+      return await this.analyticsService.productsAnalytics();
     } catch (err) {
       throw err;
     }

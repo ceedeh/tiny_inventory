@@ -1,5 +1,5 @@
 import { IStoreRepository, Store } from '@/db';
-import { BadRequestException } from '@/shared/errors';
+import { BadRequestException, NotFoundException } from '@/shared/errors';
 import { Logger } from '@/shared/logger';
 import { BaseFilter } from '@/shared/types';
 
@@ -50,7 +50,7 @@ export class StoreService {
 
     const store = await this.storeRepository.findById(id);
     if (!store) {
-      throw new BadRequestException(`Store with id ${id} not found`);
+      throw new NotFoundException(`Store with id ${id} not found`);
     }
     return store;
   }

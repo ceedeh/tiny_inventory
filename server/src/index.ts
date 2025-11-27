@@ -1,7 +1,7 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { createApp } from './app';
 import { Config } from './config';
-import { getDB, ProductRepository, StoreRepository } from './db';
+import { getDB, ProductRepository, seedDB, StoreRepository } from './db';
 import { Logger } from './shared/logger';
 
 async function startServer() {
@@ -10,6 +10,10 @@ async function startServer() {
 
   const db = getDB();
   await migrate(db, { migrationsFolder: './src/db/migrations' });
+  logger.info('Database migrations applied');
+
+  await seedDB(db);
+  logger.info('Database seeding completed');
 
   const storeRepository = new StoreRepository(db);
   const productRepository = new ProductRepository(db);

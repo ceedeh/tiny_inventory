@@ -7,4 +7,5 @@ export interface IStoreRepository {
   create(data: Store): Promise<Store>;
   update(id: string, data: Partial<Store>): Promise<Store | null>;
   delete(id: string): Promise<void>;
+  getStoreCount(): Promise<number>;
 }

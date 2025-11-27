@@ -55,6 +55,10 @@ export class StoreRepositoryMock implements IStoreRepository {
     this.stores.delete(id);
   }
 
+  async getStoreCount(): Promise<number> {
+    return this.stores.size;
+  }
+
   // Test helper methods
   clear(): void {
     this.stores.clear();

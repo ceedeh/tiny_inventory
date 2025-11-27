@@ -8,7 +8,8 @@ export interface IProductRepository {
   create(data: Product): Promise<Product>;
   update(id: string, data: Partial<Product>): Promise<Product | null>;
   delete(id: string): Promise<void>;
-  countProductsByStore(): Promise<Array<{ storeId: string; products: number }>>;
+  getProductCount(): Promise<number>;
+  getAverageProductCount(): Promise<number>;
   countProductsByCategoryForStore(
     storeId: string
   ): Promise<Array<{ category: string; products: number }>>;

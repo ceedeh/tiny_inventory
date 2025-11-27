@@ -14,7 +14,7 @@ export class AnalyticsRouter {
   setup() {
     const r = express.Router();
 
-    r.get('/products-by-store', promisifyHandler(this.handlers.countProductsByStore));
+    r.get('/products-stores', promisifyHandler(this.handlers.productsAnalytics));
     r.get(
       '/stores/:storeId/products-by-category',
       promisifyHandler(this.handlers.countProductsByCategoryForStore)

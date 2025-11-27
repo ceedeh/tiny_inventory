@@ -14,7 +14,8 @@ export const insertProductSchema = z.object({
     .transform((val) => val.trim().toLowerCase()),
   price: z
     .number({ required_error: 'price is required' })
-    .positive('price must be a positive number'),
+    .positive('price must be a positive number')
+    .transform((val) => Math.round(val * 100)),
   quantity: z
     .number({ required_error: 'quantity is required' })
     .int()
@@ -30,8 +31,16 @@ export const updateProductSchema = insertProductSchema.partial();
 
 export const productFilterSchema = paginationSchema.extend({
   category: z.string().optional(),
-  minPrice: z.coerce.number().positive().optional(),
-  maxPrice: z.coerce.number().positive().optional(),
+  minPrice: z.coerce
+    .number()
+    .positive()
+    .optional()
+    .transform((val) => (val ? Math.round(val * 100) : undefined)),
+  maxPrice: z.coerce
+    .number()
+    .positive()
+    .optional()
+    .transform((val) => (val ? Math.round(val * 100) : undefined)),
   minStock: z.coerce.number().int().min(0).optional(),
   maxStock: z.coerce.number().int().min(0).optional(),
   storeId: z.string().uuid().optional(),

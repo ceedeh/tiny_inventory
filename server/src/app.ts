@@ -46,7 +46,11 @@ export function createApp(opts: AppOptions): Application {
     opts.repositories.storeRepository,
     opts.logger
   );
-  const analyticsService = new AnalyticsService(opts.repositories.productRepository, opts.logger);
+  const analyticsService = new AnalyticsService(
+    opts.repositories.productRepository,
+    opts.repositories.storeRepository,
+    opts.logger
+  );
 
   const storeRouter = new StoreRouter(storeService);
   const productRouter = new ProductRouter(productService);

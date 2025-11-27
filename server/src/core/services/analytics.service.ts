@@ -1,16 +1,27 @@
-import { IProductRepository } from '@/db';
+import { IProductRepository, IStoreRepository } from '@/db';
 import { Logger } from '@/shared/logger';
 
 export class AnalyticsService {
   constructor(
     private readonly productRepository: IProductRepository,
+    private readonly storeRepository: IStoreRepository,
     private readonly logger: Logger
   ) {}
 
-  async countProductsByStore() {
-    this.logger.info('Fetching products grouped by store');
+  async productsAnalytics() {
+    this.logger.info('Fetching products analytics');
 
-    return this.productRepository.countProductsByStore();
+    const [productCount, averageProductCount, storeCount] = await Promise.all([
+      this.productRepository.getProductCount(),
+      this.productRepository.getAverageProductCount(),
+      this.storeRepository.getStoreCount(),
+    ]);
+
+    return {
+      productCount,
+      averageProductCount,
+      storeCount,
+    };
   }
 
   async countProductsByCategoryForStore(storeId: string) {
