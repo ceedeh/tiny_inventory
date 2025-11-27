@@ -455,7 +455,3 @@ VITE_API_URL=http://localhost:3000/api/v1
 ## License
 
 MIT
-
-## Author
-
-Built as a home assignment for Knostic, demonstrating full-stack TypeScript development, clean architecture, and modern web practices.
