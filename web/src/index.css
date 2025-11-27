@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-facebook-blue: #1877f2;
+  --color-facebook-gray: #f0f2f5;
+  --color-facebook-darkBlue: #166fe5;
+  --color-facebook-lightBlue: #e7f3ff;
+}
+
+body {
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
