@@ -3,3 +3,4 @@ export { Card } from "./Card";
 export { Input } from "./Input";
 export { Textarea } from "./Textarea";
 export { Modal } from "./Modal";
+export { Pagination } from "./Pagination";

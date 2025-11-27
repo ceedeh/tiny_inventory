@@ -5,8 +5,8 @@ export const useStores = (page = 1, limit = 100) =>
   useQuery({
     queryKey: ["stores", page, limit],
     queryFn: async () => {
-      const { data } = await storeApi.getAll(page, limit);
-      return data;
+      const response = await storeApi.getAll(page, limit);
+      return response;
     },
   });
 
@@ -72,8 +72,8 @@ export const useProducts = (params: {
   useQuery({
     queryKey: ["products", params],
     queryFn: async () => {
-      const { data } = await productApi.getAll(params);
-      return data;
+      const response = await productApi.getAll(params);
+      return response;
     },
   });
 

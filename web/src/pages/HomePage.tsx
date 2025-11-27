@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button, Pagination } from "@/components/ui";
 import { StoreCard } from "@/components/stores/StoreCard";
 import { StoreFormModal } from "@/components/stores/StoreFormModal";
 import { AnalyticsCard } from "@/components/analytics/AnalyticsCard";
@@ -10,11 +11,21 @@ import type { Store } from "@/lib/types";
 export function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState<Store | undefined>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const itemsPerPage = 6;
 
-  const { data: storesData, isLoading: storesLoading } = useStores();
+  const { data: storesResponse, isLoading: storesLoading } = useStores(
+    currentPage,
+    itemsPerPage
+  );
   const { data: analyticsData, isLoading: analyticsLoading } =
     useProductsByStore();
   const deleteStore = useDeleteStore();
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+  };
 
   const handleEdit = (store: Store) => {
     setSelectedStore(store);
@@ -80,23 +91,34 @@ export function HomePage() {
           <div className="text-center py-12">
             <p className="text-gray-600">Loading...</p>
           </div>
-        ) : storesData?.length === 0 ? (
+        ) : storesResponse?.data?.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">
               No stores yet. Create your first store!
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {storesData?.map((store) => (
-              <StoreCard
-                key={store.id}
-                store={store}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              {storesResponse?.data?.map((store) => (
+                <StoreCard
+                  key={store.id}
+                  store={store}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+            {storesResponse?.pagination && (
+              <Pagination
+                currentPage={storesResponse.pagination.page}
+                totalPages={storesResponse.pagination.totalPages}
+                totalItems={storesResponse.pagination.total}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
               />
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 

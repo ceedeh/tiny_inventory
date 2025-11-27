@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button, Pagination } from "@/components/ui";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductFormModal } from "@/components/products/ProductFormModal";
 import { CategoryChart } from "@/components/analytics/CategoryChart";
@@ -18,15 +18,23 @@ export function StoreDetailPage() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const itemsPerPage = 6;
 
   const { data: store, isLoading: storeLoading } = useStore(id!);
-  const { data: productsData, isLoading: productsLoading } = useProducts({
+  const { data: productsResponse, isLoading: productsLoading } = useProducts({
     storeId: id,
-    limit: 100,
+    page: currentPage,
+    limit: itemsPerPage,
   });
   const { data: categoryData, isLoading: categoryLoading } =
     useProductsByCategoryForStore(id!);
   const deleteProduct = useDeleteProduct();
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+  };
 
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
@@ -107,23 +115,34 @@ export function StoreDetailPage() {
           <div className="text-center py-12">
             <p className="text-gray-600">Loading products...</p>
           </div>
-        ) : productsData?.length === 0 ? (
+        ) : productsResponse?.data?.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">
               No products yet. Add your first product!
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {productsData?.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              {productsResponse?.data?.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+            {productsResponse?.pagination && (
+              <Pagination
+                currentPage={productsResponse.pagination.page}
+                totalPages={productsResponse.pagination.totalPages}
+                totalItems={productsResponse.pagination.total}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
               />
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 
