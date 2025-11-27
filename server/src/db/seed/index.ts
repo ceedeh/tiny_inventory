@@ -29,7 +29,7 @@ export const seedDB = async (db: Database) => {
 
   await Promise.all(
     storeIDS.map(async (storeId) => {
-      const products = Array.from({ length: 10 }).map(() => ({
+      const products = Array.from({ length: 50 }).map(() => ({
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
         sku: faker.string.alphanumeric(8).toUpperCase(),

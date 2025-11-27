@@ -21,22 +21,20 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Set environment to development
-ENV NODE_ENV=development
+# Set environment to production
+ENV NODE_ENV=production
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies for development mode)
-RUN npm ci
+# Install only production dependencies
+RUN npm ci --only=production
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy source files for dev tools (drizzle-kit, tsx)
-COPY tsconfig.json ./
+# Copy necessary config files for runtime
 COPY drizzle.config.ts ./
-COPY src ./src
 
 EXPOSE 3000
 
